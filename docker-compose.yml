@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  # ===========================================
+  # PostgreSQL Database
+  # ===========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: enterprise-ai-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: enterprise_ai_image_optimizer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enterprise-ai-network
+
+  # ===========================================
+  # Redis for BullMQ Queue
+  # ===========================================
+  redis:
+    image: redis:7-alpine
+    container_name: enterprise-ai-redis
+    command: redis-server --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enterprise-ai-network
+
+  # ===========================================
+  # pgAdmin (Optional - Database Management)
+  # ===========================================
+  pgadmin:
+    image: dpage/pgadmin8:latest
+    container_name: enterprise-ai-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - enterprise-ai-network
+
+  # ===========================================
+  # Redis Commander (Optional - Redis Management)
+  # ===========================================
+  redis-commander:
+    image: ghcr.io/joeferner/redis-commander:latest
+    container_name: enterprise-ai-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+      HTTP_PASSWORD: redis_commander_password
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - enterprise-ai-network
+
+  # ===========================================
+  # Application (Development)
+  # ===========================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: enterprise-ai-app
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/enterprise_ai_image_optimizer?schema=public
+      REDIS_URL: redis://:redis_password@redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - enterprise-ai-network
+    command: npm run dev
+
+  # ===========================================
+  # Worker (Production/Development)
+  # ===========================================
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: enterprise-ai-worker
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/enterprise_ai_image_optimizer?schema=public
+      REDIS_URL: redis://:redis_password@redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      RUN_WORKER_SEPARATELY: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - enterprise-ai-network
+    command: npm run worker:process
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+
+networks:
+  enterprise-ai-network:
+    driver: bridge

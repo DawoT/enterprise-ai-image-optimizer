@@ -1,7 +1,9 @@
 import { SharpImageProcessor } from '@/infrastructure/image/sharp-image-processor';
 import { LocalStorageService } from '@/infrastructure/storage/local-storage-service';
+import { PrismaImageJobRepository } from '@/infrastructure/repositories/prisma-image-job.repository';
 import { ImageJobRepository } from '@/core/domain/interfaces/image-job.repository.interface';
 import { ImageJob } from '@/core/domain/entities/image-job';
+import { QueueClient, IMAGE_PROCESSING_QUEUE } from '@/infrastructure/queue/queue-client';
 
 /**
  * Inicializa el contenedor de dependencias.
@@ -53,6 +55,7 @@ class DependencyContainer {
       'StorageService',
       'ImageJobRepository',
       'EventBus',
+      'QueueClient',
     ];
     return singletonDependencies.includes(name);
   }
@@ -87,11 +90,30 @@ function initializeContainer(): void {
       }),
   );
 
-  // Repositorio de trabajos (en memoria para desarrollo)
-  container.register<ImageJobRepository>(
-    'ImageJobRepository',
-    () => new InMemoryImageJobRepository(),
-  );
+  // Repositorio de trabajos
+  // En test usamos InMemory, en producción usamos Prisma
+  if (process.env.NODE_ENV === 'test') {
+    container.register<ImageJobRepository>(
+      'ImageJobRepository',
+      () => new InMemoryImageJobRepository(),
+    );
+  } else {
+    // Verificar que DATABASE_URL esté configurado
+    if (!process.env.DATABASE_URL) {
+      console.warn(
+        'DATABASE_URL not set, falling back to InMemoryImageJobRepository',
+      );
+      container.register<ImageJobRepository>(
+        'ImageJobRepository',
+        () => new InMemoryImageJobRepository(),
+      );
+    } else {
+      container.register<ImageJobRepository>(
+        'ImageJobRepository',
+        () => new PrismaImageJobRepository(),
+      );
+    }
+  }
 
   // Servicio de IA (Gemini) - opcional
   if (process.env.GEMINI_API_KEY) {
@@ -105,10 +127,21 @@ function initializeContainer(): void {
           temperature: parseFloat(process.env.AI_TEMPERATURE ?? '0.1'),
         }),
     );
+  } else {
+    container.register('AIAnalysisService', () => null);
   }
 
   // Bus de eventos (en memoria)
   container.register('EventBus', () => new InMemoryEventBus());
+
+  // Cliente de cola BullMQ
+  // Solo inicializar si Redis está disponible
+  if (process.env.REDIS_URL || process.env.REDIS_HOST) {
+    container.register<QueueClient>(
+      'QueueClient',
+      () => QueueClient.getInstance(),
+    );
+  }
 }
 
 // Inicializar el contenedor
@@ -116,7 +149,7 @@ initializeContainer();
 
 /**
  * Implementación en memoria del repositorio de trabajos.
- * Para producción, usar Prisma con PostgreSQL.
+ * Para testing y desarrollo sin base de datos.
  */
 class InMemoryImageJobRepository implements ImageJobRepository {
   private readonly jobs: Map<string, ImageJob> = new Map();
@@ -189,7 +222,7 @@ class InMemoryImageJobRepository implements ImageJobRepository {
       processingJobs: jobs.filter((j) => j.status.isProcessing).length,
       completedJobs: completed.length,
       failedJobs: jobs.filter((j) => j.status.isFailed).length,
-      averageProcessingTimeMs: 0, // TODO: Implementar tracking de tiempo
+      averageProcessingTimeMs: 0,
     };
   }
 }

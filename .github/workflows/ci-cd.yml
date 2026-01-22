@@ -8,7 +8,6 @@ on:
 
 env:
   NODE_VERSION: '20.x'
-  PRERELEASE_NODE_VERSION: '20.1.0'
 
 jobs:
   lint:
@@ -28,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npm run lint
+        run: npm run lint -- --max-warnings=0
 
       - name: Run TypeScript check
         run: npm run type-check
@@ -50,11 +49,11 @@ jobs:
         run: npm ci
 
       - name: Run Unit Tests
-        run: npm run test -- --passWithNoTests
+        run: npm run test -- --passWithNoTests --forceExit
 
       - name: Upload coverage to Codecov
         if: github.event_name == 'pull_request'
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
@@ -108,16 +107,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install wait-on for reliable server waiting
+        run: npm install --save-dev wait-on
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: nextjs-build
           path: .
 
-      - name: Start application
+      - name: Start application with wait-on
         run: |
           npm run start &
-          sleep 10
+          echo "Waiting for server to be ready..."
+          npx wait-on http://localhost:3000 -t 60000 --interval 1000 --window 500 --delay 500 || echo "Timeout waiting for server, continuing..."
 
       - name: Run Cypress E2E tests
         run: npm run test:e2e

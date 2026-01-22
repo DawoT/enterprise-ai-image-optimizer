@@ -1,0 +1,117 @@
+// Prisma Schema for Enterprise AI Image Optimizer
+// This schema reflects the domain entities and provides persistence
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================================
+// Image Job Model
+// Represents a processing job for an uploaded image
+// ===========================================
+model ImageJob {
+  // Primary identifier (UUID)
+  id                  String            @id @default(uuid())
+  
+  // File information
+  originalFileName    String            @db.VarChar(255)
+  originalFileSize    Int
+  mimeType            String            @db.VarChar(100)
+  originalFilePath    String            @db.VarChar(500)
+  
+  // Processing status
+  status              JobStatus         @default(PENDING)
+  
+  // Processing metadata
+  processingStartedAt DateTime?
+  processingEndedAt   DateTime?
+  errorMessage        String?           @db.Text
+  
+  // Timestamps
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  
+  // Context data (JSON)
+  brandContext        Json?
+  productContext      Json?
+  
+  // Relations
+  versions            ImageVersion[]
+  
+  // Indexes for performance
+  @@index([status])
+  @@index([createdAt])
+  @@index([originalFileName])
+}
+
+// ===========================================
+// Image Version Model
+// Represents a processed version of an image
+// ===========================================
+model ImageVersion {
+  // Primary identifier
+  id          String    @id @default(uuid())
+  
+  // Foreign key to parent job
+  jobId       String
+  job         ImageJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  // Version type (V1_MASTER, V2_GRID, V3_PDP, V4_THUMBNAIL)
+  versionType String    @db.VarChar(50)
+  
+  // Image properties
+  width       Int
+  height      Int
+  fileSize    Int
+  format      String    @db.VarChar(20)
+  quality     Int       @default(85)
+  
+  // File path
+  filePath    String    @db.VarChar(500)
+  fileName    String    @db.VarChar(255)
+  fileHash    String?   @db.VarChar(64)
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  
+  // Composite unique constraint
+  @@unique([jobId, versionType])
+  @@index([jobId])
+}
+
+// ===========================================
+// Audit Log Model (Optional Enhancement)
+// Tracks all significant operations
+// ===========================================
+model AuditLog {
+  id          String    @id @default(uuid())
+  entityType  String    @db.VarChar(100)
+  entityId    String    @db.VarChar(100)
+  action      String    @db.VarChar(50)
+  performedBy String?   @db.VarChar(100)
+  metadata    Json?
+  ipAddress   String?   @db.VarChar(45)
+  userAgent   String?   @db.VarChar(500)
+  createdAt   DateTime  @default(now())
+  
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@index([action])
+}
+
+// ===========================================
+// Enums
+// ===========================================
+enum JobStatus {
+  PENDING
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
