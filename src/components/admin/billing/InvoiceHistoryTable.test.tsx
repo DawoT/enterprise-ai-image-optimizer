@@ -77,7 +77,7 @@ describe('InvoiceHistoryTable', () => {
     expect(screen.getByText('Date')).toBeInTheDocument();
     expect(screen.getByText('Invoice')).toBeInTheDocument();
     expect(screen.getByText('Amount')).toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument());
+    expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Actions')).toBeInTheDocument();
   });
 
@@ -305,6 +305,8 @@ describe('InvoiceHistoryTable', () => {
     render(<InvoiceHistoryTable invoices={manyInvoices} pageSize={10} />);
     
     expect(screen.getByRole('navigation')).toBeInTheDocument();
-    expect(screen.getByText(/1.*2.*3/)).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
   });
 });

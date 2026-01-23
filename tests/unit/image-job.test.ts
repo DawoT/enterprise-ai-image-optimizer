@@ -152,15 +152,24 @@ describe('ImageJob', () => {
 
   describe('equality', () => {
     it('should be equal when IDs match', () => {
-      const id = ImageJobId.create('test-id-123');
-      const props = { ...validProps };
+      const idStr = '123e4567-e89b-12d3-a456-426614174000';
+      const persistenceProps = {
+        id: idStr,
+        file_name: 'test.jpg',
+        original_file_size: 1000,
+        original_file_path: '/tmp/test.jpg',
+        mime_type: 'image/jpeg',
+        status: 'PENDING',
+        created_at: new Date(),
+        updated_at: new Date(),
+        versions: [],
+        metadata: {},
+      };
 
-      // Simular que ambos tienen el mismo ID
-      const job1 = ImageJob.create(props);
-      const job2 = ImageJob.create(props);
+      const job1 = ImageJob.fromPersistence(persistenceProps);
+      const job2 = ImageJob.fromPersistence(persistenceProps);
 
-      // Los IDs serán diferentes porque se generan nuevos
-      expect(job1.equals(job2)).toBe(false);
+      expect(job1.equals(job2)).toBe(true);
     });
   });
 });
@@ -173,8 +182,8 @@ describe('ImageJobId', () => {
     );
   });
 
-  it('should accept a custom ID', () => {
-    const customId = 'custom-id-123';
+  it('should accept a valid custom UUID', () => {
+    const customId = '123e4567-e89b-12d3-a456-426614174000';
     const id = ImageJobId.create(customId);
     expect(id.value).toBe(customId);
   });

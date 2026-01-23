@@ -464,7 +464,7 @@ export default function PromptTemplateEditor({
                         className="w-full text-left p-2 bg-white rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-mono text-sm text-blue-600">{{{variable.name}}}</span>
+                          <span className="font-mono text-sm text-blue-600">{`{{${variable.name}}}`}</span>
                           <span className="text-xs text-gray-400">{variable.type}</span>
                         </div>
                         <p className="text-xs text-gray-500 mt-1">{variable.description}</p>
