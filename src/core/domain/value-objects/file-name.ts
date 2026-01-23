@@ -20,9 +20,7 @@ export class FileName implements ValueObject<string> {
     }
 
     if (value.length > MAX_FILENAME_LENGTH) {
-      throw new Error(
-        `El nombre de archivo no puede exceder ${MAX_FILENAME_LENGTH} caracteres`,
-      );
+      throw new Error(`El nombre de archivo no puede exceder ${MAX_FILENAME_LENGTH} caracteres`);
     }
 
     if (!this.isValidFileName(value)) {

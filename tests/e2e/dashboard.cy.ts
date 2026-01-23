@@ -66,7 +66,7 @@ describe('Dashboard Page', () => {
   it('should display the dashboard header correctly', () => {
     cy.contains('h1', 'Dashboard').should('be.visible');
     cy.contains('p', 'Bienvenido a la plataforma de optimización de imágenes con IA').should(
-      'be.visible',
+      'be.visible'
     );
   });
 
@@ -88,13 +88,9 @@ describe('Dashboard Page', () => {
   });
 
   it('should display status badges with correct colors', () => {
-    cy.contains('Completado')
-      .parent()
-      .should('have.class', 'bg-green-100');
+    cy.contains('Completado').parent().should('have.class', 'bg-green-100');
 
-    cy.contains('Procesando')
-      .parent()
-      .should('have.class', 'bg-purple-100');
+    cy.contains('Procesando').parent().should('have.class', 'bg-purple-100');
   });
 
   it('should have quick actions', () => {

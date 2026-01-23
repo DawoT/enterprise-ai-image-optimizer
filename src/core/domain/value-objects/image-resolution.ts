@@ -26,15 +26,11 @@ export class ImageResolution implements ValueObject<string> {
     }
 
     if (width > MAX_RESOLUTION_dimension) {
-      throw new Error(
-        `El ancho no puede exceder ${MAX_RESOLUTION_dimension} píxeles`,
-      );
+      throw new Error(`El ancho no puede exceder ${MAX_RESOLUTION_dimension} píxeles`);
     }
 
     if (height > MAX_RESOLUTION_dimension) {
-      throw new Error(
-        `El alto no puede exceder ${MAX_RESOLUTION_dimension} píxeles`,
-      );
+      throw new Error(`El alto no puede exceder ${MAX_RESOLUTION_dimension} píxeles`);
     }
 
     return new ImageResolution(width, height);
@@ -99,10 +95,7 @@ export class ImageResolution implements ValueObject<string> {
     const newHeight = Math.round(this._height * ratio);
 
     // Asegurar que las dimensiones sean múltiplos de 2 (requerido por algunos códecs)
-    return ImageResolution.create(
-      newWidth - (newWidth % 2),
-      newHeight - (newHeight % 2),
-    );
+    return ImageResolution.create(newWidth - (newWidth % 2), newHeight - (newHeight % 2));
   }
 
   /**
@@ -125,10 +118,7 @@ export class ImageResolution implements ValueObject<string> {
       newHeight = Math.round(targetWidth / sourceRatio);
     }
 
-    return ImageResolution.create(
-      newWidth - (newWidth % 2),
-      newHeight - (newHeight % 2),
-    );
+    return ImageResolution.create(newWidth - (newWidth % 2), newHeight - (newHeight % 2));
   }
 
   /**

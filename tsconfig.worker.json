@@ -42,12 +42,5 @@
     "src/core/**/*.ts",
     "src/lib/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "cypress",
-    "**/*.cy.ts",
-    ".next",
-    "build",
-    "dist"
-  ]
+  "exclude": ["node_modules", "cypress", "**/*.cy.ts", ".next", "build", "dist"]
 }

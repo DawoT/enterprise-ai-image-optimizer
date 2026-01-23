@@ -17,13 +17,11 @@ export interface UploadImageResult {
  * Caso de uso para subir una nueva imagen al sistema.
  * Maneja la validación, almacenamiento inicial y creación del trabajo.
  */
-export class UploadImageUseCase
-  implements UseCase<UploadImageUseCaseParams, UploadImageResult>
-{
+export class UploadImageUseCase implements UseCase<UploadImageUseCaseParams, UploadImageResult> {
   constructor(
     private readonly imageJobRepository: ImageJobRepository,
     private readonly storageService: ImageStorageService,
-    private readonly eventBus: DomainEventBus,
+    private readonly eventBus: DomainEventBus
   ) {}
 
   /**
@@ -54,7 +52,7 @@ export class UploadImageUseCase
       const filePath = await this.storageService.store(
         params.fileBuffer,
         savedJob.id.value,
-        params.fileName,
+        params.fileName
       );
 
       // Actualizar el trabajo con la ruta del archivo
@@ -66,7 +64,7 @@ export class UploadImageUseCase
       const filePath = await this.storageService.store(
         fileBuffer,
         savedJob.id.value,
-        params.fileName,
+        params.fileName
       );
 
       (savedJob as { originalFilePath: string }).originalFilePath = filePath;
@@ -94,12 +92,7 @@ export class UploadImageUseCase
     }
 
     // Validar tipo MIME
-    const allowedTypes = [
-      'image/jpeg',
-      'image/png',
-      'image/webp',
-      'image/tiff',
-    ];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/tiff'];
     if (!allowedTypes.includes(params.mimeType)) {
       throw new DomainError('Tipo de archivo no soportado', {
         code: 'INVALID_FILE_TYPE',

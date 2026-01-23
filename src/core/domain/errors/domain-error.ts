@@ -14,7 +14,7 @@ export abstract class DomainError extends Error {
       code?: string;
       context?: Record<string, unknown>;
       isRecoverable?: boolean;
-    } = {},
+    } = {}
   ) {
     super(message);
     this.name = this.constructor.name;

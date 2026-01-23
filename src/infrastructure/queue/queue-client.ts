@@ -69,17 +69,11 @@ export class QueueClient {
   private static instance: QueueClient | null = null;
 
   private constructor() {
-    this.queue = new Queue<ImageProcessingJobData>(
-      IMAGE_PROCESSING_QUEUE,
-      queueOptions,
-    );
+    this.queue = new Queue<ImageProcessingJobData>(IMAGE_PROCESSING_QUEUE, queueOptions);
 
     // Crear scheduler solo si no está en modo de worker separado
     if (process.env.RUN_WORKER_SEPARATELY !== 'true') {
-      this.scheduler = new QueueScheduler(
-        IMAGE_PROCESSING_QUEUE,
-        getRedisConnection(),
-      );
+      this.scheduler = new QueueScheduler(IMAGE_PROCESSING_QUEUE, getRedisConnection());
     }
   }
 
@@ -102,7 +96,7 @@ export class QueueClient {
       runAIAnalysis?: boolean;
       priority?: number;
       delayMs?: number;
-    } = {},
+    } = {}
   ): Promise<string> {
     const job = await this.queue.add(
       'process-image',
@@ -116,7 +110,7 @@ export class QueueClient {
         priority: options.priority ?? 0,
         delay: options.delayMs ?? 0,
         jobId: `image-${jobId}`,
-      },
+      }
     );
 
     return job.id!;
@@ -167,14 +161,12 @@ export class QueueClient {
 /**
  * Crea y configura el worker para procesar trabajos de la cola.
  */
-export function createImageProcessorWorker(
-  dependencies: {
-    imageJobRepository: ImageJobRepository;
-    imageProcessor: ImageProcessorPort;
-    aiAnalysisService: AIAnalysisService | null;
-    storageService: ImageStorageService;
-  },
-): Worker<ImageProcessingJobData> {
+export function createImageProcessorWorker(dependencies: {
+  imageJobRepository: ImageJobRepository;
+  imageProcessor: ImageProcessorPort;
+  aiAnalysisService: AIAnalysisService | null;
+  storageService: ImageStorageService;
+}): Worker<ImageProcessingJobData> {
   const worker = new Worker<ImageProcessingJobData>(
     IMAGE_PROCESSING_QUEUE,
     async (job) => {
@@ -189,7 +181,7 @@ export function createImageProcessorWorker(
         dependencies.imageJobRepository,
         dependencies.imageProcessor,
         dependencies.aiAnalysisService,
-        dependencies.storageService,
+        dependencies.storageService
       );
 
       // Buscar el trabajo para verificar estado
@@ -232,10 +224,7 @@ export function createImageProcessorWorker(
 
         if (error instanceof DomainError && !error.isRecoverable) {
           // Error no recuperable, marcar como fallido permanentemente
-          await dependencies.imageJobRepository.updateStatus(
-            imageJobId,
-            ProcessingStatus.failed(),
-          );
+          await dependencies.imageJobRepository.updateStatus(imageJobId, ProcessingStatus.failed());
           throw error;
         }
 
@@ -246,7 +235,7 @@ export function createImageProcessorWorker(
     {
       ...getRedisConnection(),
       concurrency: parseInt(process.env.WORKER_CONCURRENCY ?? '2', 10),
-    },
+    }
   );
 
   // Manejar eventos del worker

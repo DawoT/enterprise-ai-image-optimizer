@@ -7,8 +7,11 @@ import { ProcessingStatus } from '../value-objects/processing-status';
  * Puerto (interface) para el repositorio de trabajos de imagen.
  * Define las operaciones disponibles para persistir y consultar ImageJobs.
  */
-export interface ImageJobRepository
-  extends Repository<ImageJob, ImageJobId, ImageJobPersistenceProps> {
+export interface ImageJobRepository extends Repository<
+  ImageJob,
+  ImageJobId,
+  ImageJobPersistenceProps
+> {
   /**
    * Busca trabajos por estado de procesamiento.
    */
@@ -27,10 +30,7 @@ export interface ImageJobRepository
   /**
    * Actualiza el estado de un trabajo.
    */
-  updateStatus(
-    id: ImageJobId,
-    status: ProcessingStatus,
-  ): Promise<ImageJob>;
+  updateStatus(id: ImageJobId, status: ProcessingStatus): Promise<ImageJob>;
 
   /**
    * Obtiene estadísticas de procesamiento.

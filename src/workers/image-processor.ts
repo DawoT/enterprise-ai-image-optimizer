@@ -17,10 +17,7 @@
  */
 
 import { container } from '@/infrastructure/di/container';
-import {
-  QueueClient,
-  createImageProcessorWorker,
-} from '@/infrastructure/queue/queue-client';
+import { QueueClient, createImageProcessorWorker } from '@/infrastructure/queue/queue-client';
 import { prisma } from '@/infrastructure/db/prisma-client';
 
 // Configuración del worker

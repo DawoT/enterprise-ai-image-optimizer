@@ -6,18 +6,12 @@ export interface AIAnalysisService {
   /**
    * Analiza una imagen y genera metadata y sugerencias.
    */
-  analyze(
-    imageBuffer: Buffer,
-    context: AIAnalysisContext,
-  ): Promise<AIAnalysisResult>;
+  analyze(imageBuffer: Buffer, context: AIAnalysisContext): Promise<AIAnalysisResult>;
 
   /**
    * Genera un prompt optimizado para la imagen.
    */
-  generatePrompt(
-    imageBuffer: Buffer,
-    context: AIAnalysisContext,
-  ): Promise<string>;
+  generatePrompt(imageBuffer: Buffer, context: AIAnalysisContext): Promise<string>;
 
   /**
    * Verifica la disponibilidad del servicio.
@@ -26,8 +20,8 @@ export interface AIAnalysisService {
 }
 
 /**
-   * Contexto para el análisis de IA.
-   */
+ * Contexto para el análisis de IA.
+ */
 export interface AIAnalysisContext {
   brandContext?: {
     name: string;

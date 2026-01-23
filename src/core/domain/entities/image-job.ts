@@ -213,9 +213,7 @@ export class ImageJob implements Entity<ImageJobId> {
    */
   public addVersion(version: ImageVersion): void {
     if (this._versions.has(version.type)) {
-      throw new DomainError(
-        `Ya existe una versión de tipo ${version.type} en el trabajo`,
-      );
+      throw new DomainError(`Ya existe una versión de tipo ${version.type} en el trabajo`);
     }
     this._versions.set(version.type, version);
     (this as { _updatedAt: Date })._updatedAt = new Date();

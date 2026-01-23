@@ -10,9 +10,7 @@ declare global {
 }
 
 const prismaClientOptions: ConstructorParameters<typeof PrismaClient>[0] = {
-  log: process.env.NODE_ENV === 'development'
-    ? ['query', 'error', 'warn']
-    : ['error'],
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 };
 
 export const prisma = globalThis.prisma ?? new PrismaClient(prismaClientOptions);

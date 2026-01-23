@@ -1,5 +1,9 @@
 import sharp from 'sharp';
-import { ImageProcessorPort, ImageProcessingOptions, ImageInfo } from '@/core/domain/interfaces/image-processor.port.interface';
+import {
+  ImageProcessorPort,
+  ImageProcessingOptions,
+  ImageInfo,
+} from '@/core/domain/interfaces/image-processor.port.interface';
 import { DomainError } from '@/core/domain/errors/domain-error';
 
 /**
@@ -11,11 +15,9 @@ export class SharpImageProcessor implements ImageProcessorPort {
 
   /**
    * Procesa una imagen con las opciones especificadas.
+   * Implementa Smart Crop cuando la IA proporciona coordenadas de extracción.
    */
-  public async process(
-    buffer: Buffer,
-    options: ImageProcessingOptions,
-  ): Promise<Buffer> {
+  public async process(buffer: Buffer, options: ImageProcessingOptions): Promise<Buffer> {
     try {
       let pipeline = sharp(buffer);
 
@@ -23,6 +25,34 @@ export class SharpImageProcessor implements ImageProcessorPort {
       const metadata = await pipeline.metadata();
       const originalWidth = metadata.width ?? 0;
       const originalHeight = metadata.height ?? 0;
+
+      // ========== SMART CROP: Extraer región si la IA lo sugiere ==========
+      if (options.extractRegion) {
+        // Convertir coordenadas normalizadas (0-1) a pixeles absolutos
+        const cropLeft = Math.round(options.extractRegion.left * originalWidth);
+        const cropTop = Math.round(options.extractRegion.top * originalHeight);
+        const cropWidth = Math.round(options.extractRegion.width * originalWidth);
+        const cropHeight = Math.round(options.extractRegion.height * originalHeight);
+
+        // Asegurar que las coordenadas no excedan los límites de la imagen
+        const safeLeft = Math.min(cropLeft, originalWidth - 1);
+        const safeTop = Math.min(cropTop, originalHeight - 1);
+        const safeWidth = Math.min(cropWidth, originalWidth - safeLeft);
+        const safeHeight = Math.min(cropHeight, originalHeight - safeTop);
+
+        // Asegurar dimensiones pares para evitar warnings de codec
+        const evenWidth = safeWidth - (safeWidth % 2);
+        const evenHeight = safeHeight - (safeHeight % 2);
+
+        if (evenWidth > 0 && evenHeight > 0) {
+          pipeline = pipeline.extract({
+            left: safeLeft,
+            top: safeTop,
+            width: evenWidth,
+            height: evenHeight,
+          });
+        }
+      }
 
       // Calcular las nuevas dimensiones
       let resizeOptions: sharp.ResizeOptions = {};
@@ -33,14 +63,14 @@ export class SharpImageProcessor implements ImageProcessorPort {
           originalWidth,
           originalHeight,
           options.targetWidth,
-          options.targetHeight,
+          options.targetHeight
         );
         resizeOptions = {
           width,
           height,
           fit: 'inside',
           background: this.parseBackgroundColor(
-            options.backgroundColor ?? this.defaultBackgroundColor,
+            options.backgroundColor ?? this.defaultBackgroundColor
           ),
         };
       } else if (options.fitMode === 'cover') {
@@ -49,7 +79,7 @@ export class SharpImageProcessor implements ImageProcessorPort {
           originalWidth,
           originalHeight,
           options.targetWidth,
-          options.targetHeight,
+          options.targetHeight
         );
         resizeOptions = {
           width,
@@ -57,7 +87,7 @@ export class SharpImageProcessor implements ImageProcessorPort {
           fit: 'cover',
           position: sharp.gravity.center,
           background: this.parseBackgroundColor(
-            options.backgroundColor ?? this.defaultBackgroundColor,
+            options.backgroundColor ?? this.defaultBackgroundColor
           ),
         };
       } else {
@@ -110,7 +140,7 @@ export class SharpImageProcessor implements ImageProcessorPort {
   public async compress(
     buffer: Buffer,
     format: 'WEBP' | 'JPG' | 'PNG',
-    quality: number,
+    quality: number
   ): Promise<Buffer> {
     try {
       let pipeline = sharp(buffer);
@@ -158,7 +188,7 @@ export class SharpImageProcessor implements ImageProcessorPort {
   private applyFormat(
     pipeline: sharp.Sharp,
     format: 'WEBP' | 'JPG' | 'PNG',
-    quality: number,
+    quality: number
   ): sharp.Sharp {
     switch (format) {
       case 'WEBP':
@@ -179,7 +209,7 @@ export class SharpImageProcessor implements ImageProcessorPort {
     originalWidth: number,
     originalHeight: number,
     maxWidth: number,
-    maxHeight: number,
+    maxHeight: number
   ): { width: number; height: number } {
     const widthRatio = maxWidth / originalWidth;
     const heightRatio = maxHeight / originalHeight;
@@ -198,7 +228,7 @@ export class SharpImageProcessor implements ImageProcessorPort {
     originalWidth: number,
     originalHeight: number,
     targetWidth: number,
-    targetHeight: number,
+    targetHeight: number
   ): { width: number; height: number } {
     const targetRatio = targetWidth / targetHeight;
     const originalRatio = originalWidth / originalHeight;

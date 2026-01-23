@@ -8,11 +8,7 @@ import { FileName } from '../value-objects/file-name';
  * Tipo que define las variantes de imagen soportadas por el sistema.
  * Cada variante tiene un propósito específico en el contexto de ecommerce.
  */
-export type ImageVersionType =
-  | 'V1_MASTER'
-  | 'V2_GRID'
-  | 'V3_PDP'
-  | 'V4_THUMBNAIL';
+export type ImageVersionType = 'V1_MASTER' | 'V2_GRID' | 'V3_PDP' | 'V4_THUMBNAIL';
 
 /**
  * Configuración predefinida para cada tipo de versión de imagen.
@@ -88,9 +84,7 @@ export class ImageVersion implements Entity<ImageJobId> {
   /**
    * Factory method para crear una nueva versión de imagen.
    */
-  public static create(
-    props: ImageVersionCreateProps,
-  ): ImageVersion {
+  public static create(props: ImageVersionCreateProps): ImageVersion {
     const config = IMAGE_VERSION_CONFIG[props.type];
 
     return new ImageVersion({
@@ -109,9 +103,7 @@ export class ImageVersion implements Entity<ImageJobId> {
   /**
    * Reconstruye una instancia desde datos persistidos.
    */
-  public static fromPersistence(
-    data: ImageVersionPersistenceProps,
-  ): ImageVersion {
+  public static fromPersistence(data: ImageVersionPersistenceProps): ImageVersion {
     return new ImageVersion({
       jobId: ImageJobId.create(data.job_id),
       type: data.type as ImageVersionType,
@@ -201,9 +193,7 @@ export class ImageVersion implements Entity<ImageJobId> {
    * Compara dos entidades por identidad.
    */
   public equals(other: ImageVersion): boolean {
-    return (
-      this._jobId.equals(other._jobId) && this._type === other._type
-    );
+    return this._jobId.equals(other._jobId) && this._type === other._type;
   }
 }
 

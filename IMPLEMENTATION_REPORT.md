@@ -2,7 +2,11 @@
 
 ## Resumen Ejecutivo
 
-Este informe documenta la implementación completa de la **Enterprise AI Image Optimization & Prompt Platform for Ecommerce**, incluyendo las correcciones críticas del pipeline de CI/CD y la implementación de persistencia con PostgreSQL y procesamiento asíncrono con BullMQ/Redis. La plataforma permite ingestar imágenes, procesarlas mediante pipelines automatizados, y generar las cuatro versiones estándar requeridas para operaciones de ecommerce.
+Este informe documenta la implementación completa de la **Enterprise AI Image Optimization & Prompt
+Platform for Ecommerce**, incluyendo las correcciones críticas del pipeline de CI/CD y la
+implementación de persistencia con PostgreSQL y procesamiento asíncrono con BullMQ/Redis. La
+plataforma permite ingestar imágenes, procesarlas mediante pipelines automatizados, y generar las
+cuatro versiones estándar requeridas para operaciones de ecommerce.
 
 ---
 
@@ -10,7 +14,8 @@ Este informe documenta la implementación completa de la **Enterprise AI Image O
 
 ### 1.1 Problema Identificado
 
-El pipeline de GitHub Actions fallaba en el paso de tests E2E debido a una **race condition**. El código original utilizaba:
+El pipeline de GitHub Actions fallaba en el paso de tests E2E debido a una **race condition**. El
+código original utilizaba:
 
 ```yaml
 - name: Start application
@@ -19,11 +24,13 @@ El pipeline de GitHub Actions fallaba en el paso de tests E2E debido a una **rac
     sleep 10  # Frágil: 10 segundos no son suficientes en runners lentos
 ```
 
-En entornos de CI, el servidor Next.js compilado puede tardar más de 10 segundos en estar listo, causando que Cypress intentara conectarse antes de que el servidor aceptara peticiones.
+En entornos de CI, el servidor Next.js compilado puede tardar más de 10 segundos en estar listo,
+causando que Cypress intentara conectarse antes de que el servidor aceptara peticiones.
 
 ### 1.2 Solución Implementada
 
-Se reemplazó `sleep 10` por la librería **wait-on**, que espera dinámicamente a que el servidor esté disponible:
+Se reemplazó `sleep 10` por la librería **wait-on**, que espera dinámicamente a que el servidor esté
+disponible:
 
 ```yaml
 - name: Install wait-on for reliable server waiting
@@ -97,7 +104,8 @@ enum JobStatus {
 
 ### 2.2 Repositorio de Prisma
 
-Se implementó `PrismaImageJobRepository` en `src/infrastructure/repositories/prisma-image-job.repository.ts`:
+Se implementó `PrismaImageJobRepository` en
+`src/infrastructure/repositories/prisma-image-job.repository.ts`:
 
 - Implementa la interfaz `ImageJobRepository` del dominio
 - Soporta todas las operaciones: save, findById, findAll, delete, exists
@@ -212,17 +220,17 @@ El worker incluye:
 
 ## 4. Archivos Nuevos/Creados
 
-| Archivo | Propósito |
-|---------|-----------|
-| `prisma/schema.prisma` | Esquema de base de datos PostgreSQL |
-| `src/infrastructure/db/prisma-client.ts` | Cliente singleton de Prisma |
-| `src/infrastructure/repositories/prisma-image-job.repository.ts` | Repositorio con Prisma |
-| `src/infrastructure/queue/queue-client.ts` | Cliente BullMQ y Worker factory |
-| `src/workers/image-processor.ts` | Entry point del worker |
-| `tsconfig.worker.json` | Configuración TypeScript para worker |
-| `docker-compose.yml` | Servicios de PostgreSQL y Redis |
-| `Dockerfile.dev` | Desarrollo con hot reload |
-| `.env.example` | Variables de entorno actualizadas |
+| Archivo                                                          | Propósito                            |
+| ---------------------------------------------------------------- | ------------------------------------ |
+| `prisma/schema.prisma`                                           | Esquema de base de datos PostgreSQL  |
+| `src/infrastructure/db/prisma-client.ts`                         | Cliente singleton de Prisma          |
+| `src/infrastructure/repositories/prisma-image-job.repository.ts` | Repositorio con Prisma               |
+| `src/infrastructure/queue/queue-client.ts`                       | Cliente BullMQ y Worker factory      |
+| `src/workers/image-processor.ts`                                 | Entry point del worker               |
+| `tsconfig.worker.json`                                           | Configuración TypeScript para worker |
+| `docker-compose.yml`                                             | Servicios de PostgreSQL y Redis      |
+| `Dockerfile.dev`                                                 | Desarrollo con hot reload            |
+| `.env.example`                                                   | Variables de entorno actualizadas    |
 
 ---
 
@@ -245,6 +253,7 @@ docker-compose down
 ```
 
 Servicios disponibles:
+
 - **PostgreSQL**: `localhost:5432` (postgres/postgres)
 - **Redis**: `localhost:6379` (password: redis_password)
 - **pgAdmin**: `localhost:5050` (admin@example.com/admin)
@@ -342,14 +351,14 @@ src/
 
 ### 9.1 Archivos Creados/Modificados en esta Actualización
 
-| Categorión | Archivos | Líneas |
-|------------|----------|--------|
-| Infrastructure (Nueva) | 4 | ~600 |
-| Worker (Nuevo) | 1 | ~130 |
-| Configuración (Nueva/Actualizada) | 4 | ~350 |
-| CI/CD (Actualizado) | 1 | ~220 |
-| Docker (Nuevo) | 2 | ~170 |
-| **Total** | **12** | **~1,470** |
+| Categorión                        | Archivos | Líneas     |
+| --------------------------------- | -------- | ---------- |
+| Infrastructure (Nueva)            | 4        | ~600       |
+| Worker (Nuevo)                    | 1        | ~130       |
+| Configuración (Nueva/Actualizada) | 4        | ~350       |
+| CI/CD (Actualizado)               | 1        | ~220       |
+| Docker (Nuevo)                    | 2        | ~170       |
+| **Total**                         | **12**   | **~1,470** |
 
 ### 9.2 Cobertura de Tests
 
@@ -398,7 +407,8 @@ All files           |   72.34 |    68.42 |   70.00 |   72.34 |
 - ✅ **Procesamiento Asíncrono**: BullMQ con reintentos automáticos
 - ✅ **Worker Escalable**: Proceso separado configurable
 - ✅ **Docker Ready**: docker-compose completo para desarrollo
-- ✅ **Arquitectura Limpia**: Sin modificar la capa de dominio (principio de inversión de dependencias)
+- ✅ **Arquitectura Limpia**: Sin modificar la capa de dominio (principio de inversión de
+  dependencias)
 
 ### 11.2 Flujo de Procesamiento Actual
 

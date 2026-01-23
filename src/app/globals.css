@@ -72,23 +72,23 @@
   }
 
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 btn h-10 px-4 py-2;
+    @apply btn h-10 bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 btn h-10 px-4 py-2;
+    @apply btn h-10 bg-secondary px-4 py-2 text-secondary-foreground hover:bg-secondary/80;
   }
 
   .btn-destructive {
-    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 btn h-10 px-4 py-2;
+    @apply btn h-10 bg-destructive px-4 py-2 text-destructive-foreground hover:bg-destructive/90;
   }
 
   .btn-outline {
-    @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground btn h-10 px-4 py-2;
+    @apply btn h-10 border border-input bg-background px-4 py-2 hover:bg-accent hover:text-accent-foreground;
   }
 
   .btn-ghost {
-    @apply hover:bg-accent hover:text-accent-foreground btn h-10 px-4 py-2;
+    @apply btn h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground;
   }
 
   .btn-sm {

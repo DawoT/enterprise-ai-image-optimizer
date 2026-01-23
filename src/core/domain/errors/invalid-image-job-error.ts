@@ -9,7 +9,7 @@ export class InvalidImageJobError extends DomainError {
   constructor(
     message: string,
     validationErrors: string[] = [],
-    context: Record<string, unknown> = {},
+    context: Record<string, unknown> = {}
   ) {
     super(message, {
       code: 'INVALID_IMAGE_JOB',

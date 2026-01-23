@@ -34,10 +34,7 @@ export class GeminiAIService implements AIAnalysisService {
   /**
    * Analiza una imagen y genera metadata y sugerencias.
    */
-  public async analyze(
-    imageBuffer: Buffer,
-    context: AIAnalysisContext,
-  ): Promise<AIAnalysisResult> {
+  public async analyze(imageBuffer: Buffer, context: AIAnalysisContext): Promise<AIAnalysisResult> {
     try {
       const model = this.client.getGenerativeModel({
         model: this.model,
@@ -79,10 +76,7 @@ export class GeminiAIService implements AIAnalysisService {
   /**
    * Genera un prompt optimizado para la imagen.
    */
-  public async generatePrompt(
-    imageBuffer: Buffer,
-    context: AIAnalysisContext,
-  ): Promise<string> {
+  public async generatePrompt(imageBuffer: Buffer, context: AIAnalysisContext): Promise<string> {
     try {
       const model = this.client.getGenerativeModel({
         model: this.model,
@@ -135,8 +129,8 @@ export class GeminiAIService implements AIAnalysisService {
    */
   private detectMimeType(buffer: Buffer): string {
     const signatures: Record<string, Buffer> = {
-      'image/jpeg': Buffer.from([0xFF, 0xD8, 0xFF]),
-      'image/png': Buffer.from([0x89, 0x50, 0x4E, 0x47]),
+      'image/jpeg': Buffer.from([0xff, 0xd8, 0xff]),
+      'image/png': Buffer.from([0x89, 0x50, 0x4e, 0x47]),
       'image/webp': Buffer.from([0x52, 0x49, 0x46, 0x46]),
       'image/gif': Buffer.from([0x47, 0x49, 0x46, 0x38]),
     };
@@ -184,7 +178,9 @@ export class GeminiAIService implements AIAnalysisService {
     parts.push(`  "tags": ["tag1", "tag2"],`);
     parts.push(`  "description": "brief description",`);
     parts.push(`  "issues": [`);
-    parts.push(`    { "type": "issueType", "severity": "low", "message": "description", "suggestion": "fix" }`);
+    parts.push(
+      `    { "type": "issueType", "severity": "low", "message": "description", "suggestion": "fix" }`
+    );
     parts.push(`  ]`);
     parts.push(`}`);
 

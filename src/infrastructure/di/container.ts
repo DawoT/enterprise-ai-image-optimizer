@@ -75,10 +75,7 @@ export const container = new DependencyContainer();
 // Registrar las dependencias principales
 function initializeContainer(): void {
   // Procesador de imágenes (Sharp)
-  container.register<SharpImageProcessor>(
-    'ImageProcessor',
-    () => new SharpImageProcessor(),
-  );
+  container.register<SharpImageProcessor>('ImageProcessor', () => new SharpImageProcessor());
 
   // Servicio de almacenamiento (local)
   container.register<LocalStorageService>(
@@ -87,7 +84,7 @@ function initializeContainer(): void {
       new LocalStorageService({
         baseDir: process.env.LOCAL_STORAGE_PATH ?? './storage',
         baseUrl: `${process.env.APP_URL ?? 'http://localhost:3000'}/storage`,
-      }),
+      })
   );
 
   // Repositorio de trabajos
@@ -95,22 +92,20 @@ function initializeContainer(): void {
   if (process.env.NODE_ENV === 'test') {
     container.register<ImageJobRepository>(
       'ImageJobRepository',
-      () => new InMemoryImageJobRepository(),
+      () => new InMemoryImageJobRepository()
     );
   } else {
     // Verificar que DATABASE_URL esté configurado
     if (!process.env.DATABASE_URL) {
-      console.warn(
-        'DATABASE_URL not set, falling back to InMemoryImageJobRepository',
-      );
+      console.warn('DATABASE_URL not set, falling back to InMemoryImageJobRepository');
       container.register<ImageJobRepository>(
         'ImageJobRepository',
-        () => new InMemoryImageJobRepository(),
+        () => new InMemoryImageJobRepository()
       );
     } else {
       container.register<ImageJobRepository>(
         'ImageJobRepository',
-        () => new PrismaImageJobRepository(),
+        () => new PrismaImageJobRepository()
       );
     }
   }
@@ -125,7 +120,7 @@ function initializeContainer(): void {
           apiKey: process.env.GEMINI_API_KEY,
           model: process.env.GEMINI_MODEL,
           temperature: parseFloat(process.env.AI_TEMPERATURE ?? '0.1'),
-        }),
+        })
     );
   } else {
     container.register('AIAnalysisService', () => null);
@@ -137,10 +132,7 @@ function initializeContainer(): void {
   // Cliente de cola BullMQ
   // Solo inicializar si Redis está disponible
   if (process.env.REDIS_URL || process.env.REDIS_HOST) {
-    container.register<QueueClient>(
-      'QueueClient',
-      () => QueueClient.getInstance(),
-    );
+    container.register<QueueClient>('QueueClient', () => QueueClient.getInstance());
   }
 }
 
@@ -176,27 +168,18 @@ class InMemoryImageJobRepository implements ImageJobRepository {
   }
 
   async findByStatus(status: ImageJob['status']): Promise<ImageJob[]> {
-    return Array.from(this.jobs.values()).filter((job) =>
-      job.status.equals(status),
-    );
+    return Array.from(this.jobs.values()).filter((job) => job.status.equals(status));
   }
 
   async findPending(): Promise<ImageJob[]> {
-    return Array.from(this.jobs.values()).filter((job) =>
-      job.status.isPending,
-    );
+    return Array.from(this.jobs.values()).filter((job) => job.status.isPending);
   }
 
   async findByFileName(fileName: string): Promise<ImageJob[]> {
-    return Array.from(this.jobs.values()).filter((job) =>
-      job.fileName.value.includes(fileName),
-    );
+    return Array.from(this.jobs.values()).filter((job) => job.fileName.value.includes(fileName));
   }
 
-  async updateStatus(
-    id: ImageJob['id'],
-    status: ImageJob['status'],
-  ): Promise<ImageJob> {
+  async updateStatus(id: ImageJob['id'], status: ImageJob['status']): Promise<ImageJob> {
     const job = await this.findById(id);
     if (!job) {
       throw new Error(`Trabajo no encontrado: ${id.value}`);
@@ -231,8 +214,7 @@ class InMemoryImageJobRepository implements ImageJobRepository {
  * Implementación en memoria del bus de eventos.
  */
 class InMemoryEventBus {
-  private readonly handlers: Map<string, Array<(event: unknown) => Promise<void>>> =
-    new Map();
+  private readonly handlers: Map<string, Array<(event: unknown) => Promise<void>>> = new Map();
 
   async publish<T>(event: T): Promise<void> {
     const eventType = (event as { type: string }).type;

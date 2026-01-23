@@ -9,7 +9,9 @@ import { z } from 'zod';
  * Schema de validación para listar trabajos.
  */
 const listJobsSchema = z.object({
-  status: z.enum(['PENDING', 'QUEUED', 'PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED']).optional(),
+  status: z
+    .enum(['PENDING', 'QUEUED', 'PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED'])
+    .optional(),
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(20),
 });
@@ -26,26 +28,20 @@ export async function GET(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Parámetros inválidos', details: validation.error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     const { status, page, limit } = validation.data;
 
     // Resolver dependencias
-    const imageJobRepository = container.resolve<ImageJobRepository>(
-      'ImageJobRepository',
-    );
+    const imageJobRepository = container.resolve<ImageJobRepository>('ImageJobRepository');
 
     // Obtener trabajos
     let jobs: ImageJob[];
     if (status) {
-      const { ProcessingStatus } = await import(
-        '@/core/domain/value-objects/processing-status'
-      );
-      jobs = await imageJobRepository.findByStatus(
-        ProcessingStatus.fromString(status),
-      );
+      const { ProcessingStatus } = await import('@/core/domain/value-objects/processing-status');
+      jobs = await imageJobRepository.findByStatus(ProcessingStatus.fromString(status));
     } else {
       jobs = await imageJobRepository.findAll();
     }
@@ -89,15 +85,9 @@ export async function GET(request: NextRequest) {
     console.error('Error al listar trabajos:', error);
 
     if (error instanceof DomainError) {
-      return NextResponse.json(
-        { error: error.message, code: error.code },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
     }
 
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

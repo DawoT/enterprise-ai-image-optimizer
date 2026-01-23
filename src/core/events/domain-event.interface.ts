@@ -46,16 +46,10 @@ export interface DomainEventBus {
   /**
    * Suscribe un handler a un tipo de evento.
    */
-  subscribe<T extends DomainEvent>(
-    eventType: string,
-    handler: DomainEventHandler<T>,
-  ): void;
+  subscribe<T extends DomainEvent>(eventType: string, handler: DomainEventHandler<T>): void;
 
   /**
    * Desuscribe un handler.
    */
-  unsubscribe<T extends DomainEvent>(
-    eventType: string,
-    handler: DomainEventHandler<T>,
-  ): void;
+  unsubscribe<T extends DomainEvent>(eventType: string, handler: DomainEventHandler<T>): void;
 }

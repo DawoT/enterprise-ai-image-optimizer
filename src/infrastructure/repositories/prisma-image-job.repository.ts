@@ -129,10 +129,7 @@ export class PrismaImageJobRepository implements ImageJobRepository {
   /**
    * Actualiza el estado de un trabajo.
    */
-  public async updateStatus(
-    id: ImageJobId,
-    status: ProcessingStatus,
-  ): Promise<ImageJob> {
+  public async updateStatus(id: ImageJobId, status: ProcessingStatus): Promise<ImageJob> {
     const updateData: Record<string, unknown> = {
       status: status.value as import('@prisma/client').JobStatus,
     };
@@ -237,9 +234,7 @@ export class PrismaImageJobRepository implements ImageJobRepository {
   /**
    * Convierte datos de Prisma a una entidad del dominio.
    */
-  private fromPrisma(
-    data: Prisma.ImageJobGetPayload<{ include: { versions: true } }>,
-  ): ImageJob {
+  private fromPrisma(data: Prisma.ImageJobGetPayload<{ include: { versions: true } }>): ImageJob {
     return ImageJob.fromPersistence({
       id: data.id,
       file_name: data.originalFileName,
@@ -260,7 +255,7 @@ export class PrismaImageJobRepository implements ImageJobRepository {
    * Convierte una versión de Prisma al formato de persistencia del dominio.
    */
   private versionToPersistence(
-    version: Prisma.ImageVersionGetPayload<{ include: never }>,
+    version: Prisma.ImageVersionGetPayload<{ include: never }>
   ): ImageJobPersistenceProps['versions'] extends Array<infer T> ? T : never {
     return {
       job_id: version.jobId,

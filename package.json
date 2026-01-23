@@ -23,8 +23,12 @@
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
     "worker:process": "ts-node --project tsconfig.worker.json src/workers/image-processor.ts",
+    "ingest:drive": "ts-node scripts/ingest-drive.ts",
+    "ingest:drive:watch": "ts-node scripts/ingest-drive.ts --watch",
     "docker:build": "docker build -t enterprise-ai-image-optimizer .",
-    "docker:run": "docker run -p 3000:3000 enterprise-ai-image-optimizer"
+    "docker:run": "docker run -p 3000:3000 enterprise-ai-image-optimizer",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:production": "./scripts/deploy.sh --production"
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.1",

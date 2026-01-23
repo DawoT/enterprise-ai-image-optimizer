@@ -48,9 +48,7 @@ export async function GET() {
   }
 
   // Determinar estado general
-  const allServicesHealthy = Object.values(health.services).every(
-    (s) => s === true,
-  );
+  const allServicesHealthy = Object.values(health.services).every((s) => s === true);
   health.status = allServicesHealthy ? 'ok' : 'degraded';
 
   const statusCode = health.status === 'ok' ? 200 : 503;

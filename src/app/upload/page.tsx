@@ -2,15 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Upload,
-  X,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  ImageIcon,
-  FileImage,
-} from 'lucide-react';
+import { Upload, X, CheckCircle, AlertCircle, Loader2, ImageIcon, FileImage } from 'lucide-react';
 import { cn, formatFileSize } from '@/lib/utils';
 
 /**
@@ -44,14 +36,14 @@ function DropZone({
       setIsDragging(false);
 
       const files = Array.from(e.dataTransfer.files).filter((file) =>
-        file.type.startsWith('image/'),
+        file.type.startsWith('image/')
       );
 
       if (files.length > 0) {
         onFilesSelected(files);
       }
     },
-    [onFilesSelected],
+    [onFilesSelected]
   );
 
   const handleFileInput = useCallback(
@@ -61,17 +53,17 @@ function DropZone({
         onFilesSelected(files);
       }
     },
-    [onFilesSelected],
+    [onFilesSelected]
   );
 
   return (
     <div
       className={cn(
-        'relative border-2 border-dashed rounded-lg p-12 text-center transition-colors',
+        'relative rounded-lg border-2 border-dashed p-12 text-center transition-colors',
         isDragging
           ? 'border-primary bg-primary/5'
           : 'border-muted-foreground/25 hover:border-primary/50',
-        isUploading && 'opacity-50 pointer-events-none',
+        isUploading && 'pointer-events-none opacity-50'
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -80,7 +72,7 @@ function DropZone({
       <input
         type="file"
         id="file-upload"
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
         accept="image/jpeg,image/png,image/webp,image/tiff"
         onChange={handleFileInput}
         disabled={isUploading}
@@ -89,8 +81,8 @@ function DropZone({
       <div className="flex flex-col items-center gap-4">
         <div
           className={cn(
-            'h-16 w-16 rounded-full flex items-center justify-center transition-colors',
-            isDragging ? 'bg-primary text-primary-foreground' : 'bg-muted',
+            'flex h-16 w-16 items-center justify-center rounded-full transition-colors',
+            isDragging ? 'bg-primary text-primary-foreground' : 'bg-muted'
           )}
         >
           <Upload className="h-8 w-8" />
@@ -99,7 +91,7 @@ function DropZone({
           <p className="text-lg font-medium">
             {isDragging ? 'Suelta la imagen aquí' : 'Arrastra y suelta tu imagen'}
           </p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             o haz clic para seleccionar un archivo
           </p>
         </div>
@@ -115,13 +107,7 @@ function DropZone({
 /**
  * Componente de archivo seleccionado.
  */
-function SelectedFile({
-  file,
-  onRemove,
-}: {
-  file: File;
-  onRemove: () => void;
-}) {
+function SelectedFile({ file, onRemove }: { file: File; onRemove: () => void }) {
   const [preview, setPreview] = useState<string | null>(null);
 
   useState(() => {
@@ -133,23 +119,21 @@ function SelectedFile({
   });
 
   return (
-    <div className="flex items-center gap-4 p-4 border rounded-lg">
-      <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+    <div className="flex items-center gap-4 rounded-lg border p-4">
+      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-muted">
         {preview ? (
           <img src={preview} alt="" className="h-full w-full object-cover" />
         ) : (
           <FileImage className="h-8 w-8 text-muted-foreground" />
         )}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">{file.name}</p>
-        <p className="text-sm text-muted-foreground">
-          {formatFileSize(file.size)}
-        </p>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">{file.name}</p>
+        <p className="text-sm text-muted-foreground">{formatFileSize(file.size)}</p>
       </div>
       <button
         onClick={onRemove}
-        className="p-2 hover:bg-muted rounded-full transition-colors"
+        className="rounded-full p-2 transition-colors hover:bg-muted"
         disabled={false}
       >
         <X className="h-4 w-4" />
@@ -172,17 +156,15 @@ function ProcessingOptions({
     <div className="space-y-4">
       <h3 className="font-medium">Opciones de Procesamiento</h3>
 
-      <label className="flex items-center gap-3 cursor-pointer">
+      <label className="flex cursor-pointer items-center gap-3">
         <input
           type="checkbox"
           checked={options.runAIAnalysis}
-          onChange={(e) =>
-            onChange({ ...options, runAIAnalysis: e.target.checked })
-          }
+          onChange={(e) => onChange({ ...options, runAIAnalysis: e.target.checked })}
           className="h-4 w-4 rounded border-input"
         />
         <div>
-          <p className="font-medium text-sm">Análisis con IA</p>
+          <p className="text-sm font-medium">Análisis con IA</p>
           <p className="text-xs text-muted-foreground">
             Generar prompts y sugerencias de optimización
           </p>
@@ -273,7 +255,7 @@ export default function UploadPage() {
         JSON.stringify({
           vertical: processingOptions.vertical,
           tone: processingOptions.tone,
-        }),
+        })
       );
 
       // Simular progreso
@@ -302,45 +284,37 @@ export default function UploadPage() {
         router.push('/jobs');
       }, 2000);
     } catch (err) {
-      setUploadError(
-        err instanceof Error ? err.message : 'Error desconocido al subir',
-      );
+      setUploadError(err instanceof Error ? err.message : 'Error desconocido al subir');
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
+    <div className="animate-fade-in mx-auto max-w-2xl space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Subir Imagen</h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="mt-1 text-muted-foreground">
           Sube una imagen para procesarla con IA y generar las versiones optimizadas
         </p>
       </div>
 
       {/* Upload Area */}
       <div className="card">
-        <div className="card-content p-6 space-y-6">
+        <div className="card-content space-y-6 p-6">
           {!selectedFile ? (
-            <DropZone
-              onFilesSelected={handleFilesSelected}
-              isUploading={isUploading}
-            />
+            <DropZone onFilesSelected={handleFilesSelected} isUploading={isUploading} />
           ) : (
             <div className="space-y-4">
               <SelectedFile file={selectedFile} onRemove={handleRemoveFile} />
-              <ProcessingOptions
-                options={processingOptions}
-                onChange={setProcessingOptions}
-              />
+              <ProcessingOptions options={processingOptions} onChange={setProcessingOptions} />
             </div>
           )}
 
           {/* Error Message */}
           {uploadError && (
-            <div className="flex items-center gap-2 p-4 border border-destructive/50 bg-destructive/10 rounded-lg text-destructive">
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
               <AlertCircle className="h-5 w-5" />
               <span>{uploadError}</span>
             </div>
@@ -348,7 +322,7 @@ export default function UploadPage() {
 
           {/* Success Message */}
           {uploadSuccess && (
-            <div className="flex items-center gap-2 p-4 border border-success/50 bg-success/10 rounded-lg text-success">
+            <div className="flex items-center gap-2 rounded-lg border border-success/50 bg-success/10 p-4 text-success">
               <CheckCircle className="h-5 w-5" />
               <span>{uploadSuccess}</span>
             </div>
@@ -361,7 +335,7 @@ export default function UploadPage() {
                 <span>Subiendo y procesando...</span>
                 <span>{uploadProgress}%</span>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full bg-primary transition-all duration-200"
                   style={{ width: `${uploadProgress}%` }}
@@ -373,18 +347,10 @@ export default function UploadPage() {
           {/* Submit Button */}
           {selectedFile && !isUploading && (
             <div className="flex justify-end gap-3">
-              <button
-                onClick={handleRemoveFile}
-                className="btn-outline"
-                disabled={isUploading}
-              >
+              <button onClick={handleRemoveFile} className="btn-outline" disabled={isUploading}>
                 Cancelar
               </button>
-              <button
-                onClick={handleSubmit}
-                className="btn-primary"
-                disabled={isUploading}
-              >
+              <button onClick={handleSubmit} className="btn-primary" disabled={isUploading}>
                 <Upload className="mr-2 h-4 w-4" />
                 Procesar Imagen
               </button>
@@ -401,8 +367,8 @@ export default function UploadPage() {
         <div className="card-content">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <h3 className="font-medium text-sm">Versiones Generadas</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <h3 className="text-sm font-medium">Versiones Generadas</h3>
+              <ul className="space-y-1 text-sm text-muted-foreground">
                 <li>• V1 Master 4K (4096x4096)</li>
                 <li>• V2 Grid (2048x2048)</li>
                 <li>• V3 PDP (1200x1200)</li>
@@ -410,8 +376,8 @@ export default function UploadPage() {
               </ul>
             </div>
             <div className="space-y-2">
-              <h3 className="font-medium text-sm">Optimizaciones</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <h3 className="text-sm font-medium">Optimizaciones</h3>
+              <ul className="space-y-1 text-sm text-muted-foreground">
                 <li>• Formato WEBP optimizado</li>
                 <li>• Compresión inteligente</li>
                 <li>• Análisis de IA (opcional)</li>

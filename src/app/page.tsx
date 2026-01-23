@@ -47,7 +47,7 @@ function StatCard({
                 className={cn(
                   'h-3 w-3',
                   trend === 'down' && 'rotate-180',
-                  trend === 'neutral' && 'text-gray-400',
+                  trend === 'neutral' && 'text-gray-400'
                 )}
               />
             )}
@@ -64,20 +64,20 @@ function StatCard({
  */
 function RecentJobCard({ job }: { job: RecentJob }) {
   return (
-    <div className="flex items-center justify-between p-4 border-b last:border-0">
+    <div className="flex items-center justify-between border-b p-4 last:border-0">
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
           <ImageIcon className="h-5 w-5 text-muted-foreground" />
         </div>
         <div>
-          <p className="font-medium text-sm">{job.fileName}</p>
+          <p className="text-sm font-medium">{job.fileName}</p>
           <p className="text-xs text-muted-foreground">{formatDate(job.createdAt)}</p>
         </div>
       </div>
       <span
         className={cn(
           'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-          getStatusColor(job.status),
+          getStatusColor(job.status)
         )}
       >
         {getStatusLabel(job.status)}
@@ -143,7 +143,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex min-h-[400px] items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Cargando dashboard...</div>
       </div>
     );
@@ -151,14 +151,11 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <p className="text-destructive font-medium">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="btn-primary mt-4"
-          >
+          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-destructive" />
+          <p className="font-medium text-destructive">{error}</p>
+          <button onClick={() => window.location.reload()} className="btn-primary mt-4">
             Reintentar
           </button>
         </div>
@@ -167,12 +164,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="animate-fade-in space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-1 text-muted-foreground">
             Bienvenido a la plataforma de optimización de imágenes con IA
           </p>
         </div>
@@ -215,12 +212,10 @@ export default function DashboardPage() {
       {/* Main Content Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Recent Jobs */}
-        <div className="col-span-4 card">
+        <div className="card col-span-4">
           <div className="card-header">
             <h2 className="text-lg font-semibold">Trabajos Recientes</h2>
-            <p className="text-sm text-muted-foreground">
-              Últimas imágenes procesadas
-            </p>
+            <p className="text-sm text-muted-foreground">Últimas imágenes procesadas</p>
           </div>
           <div className="card-content">
             {recentJobs.length > 0 ? (
@@ -230,10 +225,13 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <ImageIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <div className="py-8 text-center text-muted-foreground">
+                <ImageIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
                 <p>No hay trabajos recientes</p>
-                <Link href="/upload" className="text-primary hover:underline text-sm mt-2 inline-block">
+                <Link
+                  href="/upload"
+                  className="mt-2 inline-block text-sm text-primary hover:underline"
+                >
                   Subir tu primera imagen
                 </Link>
               </div>
@@ -242,56 +240,48 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="col-span-3 card">
+        <div className="card col-span-3">
           <div className="card-header">
             <h2 className="text-lg font-semibold">Acciones Rápidas</h2>
-            <p className="text-sm text-muted-foreground">
-              Operaciones comunes
-            </p>
+            <p className="text-sm text-muted-foreground">Operaciones comunes</p>
           </div>
           <div className="card-content space-y-4">
             <Link
               href="/upload"
-              className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+              className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-accent"
             >
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 <Upload className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-medium text-sm">Subir Imagen</p>
-                <p className="text-xs text-muted-foreground">
-                  Procesar nueva imagen con IA
-                </p>
+                <p className="text-sm font-medium">Subir Imagen</p>
+                <p className="text-xs text-muted-foreground">Procesar nueva imagen con IA</p>
               </div>
             </Link>
 
             <Link
               href="/jobs"
-              className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+              className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-accent"
             >
-              <div className="h-10 w-10 rounded-lg bg-secondary flex items-center justify-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
                 <BarChart3 className="h-5 w-5 text-secondary-foreground" />
               </div>
               <div>
-                <p className="font-medium text-sm">Ver Todos los Trabajos</p>
-                <p className="text-xs text-muted-foreground">
-                  Historial completo de procesamiento
-                </p>
+                <p className="text-sm font-medium">Ver Todos los Trabajos</p>
+                <p className="text-xs text-muted-foreground">Historial completo de procesamiento</p>
               </div>
             </Link>
 
             <Link
               href="/settings"
-              className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+              className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-accent"
             >
-              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                 <BarChart3 className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-medium text-sm">Configuración</p>
-                <p className="text-xs text-muted-foreground">
-                  Ajustes de la plataforma
-                </p>
+                <p className="text-sm font-medium">Configuración</p>
+                <p className="text-xs text-muted-foreground">Ajustes de la plataforma</p>
               </div>
             </Link>
           </div>

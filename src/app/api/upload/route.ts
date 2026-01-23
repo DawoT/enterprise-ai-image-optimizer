@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     if (!contentType || !contentType.includes('multipart/form-data')) {
       return NextResponse.json(
         { error: 'Content-Type debe ser multipart/form-data' },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -55,10 +55,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File | null;
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No se proporcionó ningún archivo' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'No se proporcionó ningún archivo' }, { status: 400 });
     }
 
     // Validar metadata
@@ -78,7 +75,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Validación fallida', details: validation.error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -87,17 +84,11 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
 
     // Resolver dependencias
-    const imageJobRepository = container.resolve<ImageJobRepository>(
-      'ImageJobRepository',
-    );
+    const imageJobRepository = container.resolve<ImageJobRepository>('ImageJobRepository');
     const storageService = container.resolve('StorageService');
     const eventBus = container.resolve('EventBus');
 
-    const uploadImageUseCase = new UploadImageUseCase(
-      imageJobRepository,
-      storageService,
-      eventBus,
-    );
+    const uploadImageUseCase = new UploadImageUseCase(imageJobRepository, storageService, eventBus);
 
     // Ejecutar caso de uso de upload
     const result = await uploadImageUseCase.execute({
@@ -122,23 +113,14 @@ export async function POST(request: NextRequest) {
       queueStatus = 'queued';
 
       // Actualizar estado del trabajo a QUEUED
-      await imageJobRepository.updateStatus(
-        result.job.id,
-        ProcessingStatus.queued(),
-      );
+      await imageJobRepository.updateStatus(result.job.id, ProcessingStatus.queued());
     } catch (queueError) {
       // Si la cola no está disponible, intentar procesamiento directo como fallback
-      console.warn(
-        'Queue not available, falling back to direct processing:',
-        queueError,
-      );
+      console.warn('Queue not available, falling back to direct processing:', queueError);
       queueStatus = 'fallback';
 
       // Actualizar estado a QUEUED para mantener consistencia
-      await imageJobRepository.updateStatus(
-        result.job.id,
-        ProcessingStatus.queued(),
-      );
+      await imageJobRepository.updateStatus(result.job.id, ProcessingStatus.queued());
     }
 
     // Retornar 202 Accepted (el trabajo ha sido encolado, no necesariamente completado)
@@ -155,10 +137,9 @@ export async function POST(request: NextRequest) {
           queueJobId: queueJobId,
           checkStatusUrl: `/api/jobs/${result.job.id.value}`,
         },
-        message:
-          'Imagen subida exitosamente. El procesamiento se realizará en segundo plano.',
+        message: 'Imagen subida exitosamente. El procesamiento se realizará en segundo plano.',
       },
-      { status: 202 },
+      { status: 202 }
     );
   } catch (error) {
     console.error('Error en upload:', error);
@@ -170,14 +151,11 @@ export async function POST(request: NextRequest) {
           code: error.code,
           isRecoverable: error.isRecoverable,
         },
-        { status: error.isRecoverable ? 400 : 500 },
+        { status: error.isRecoverable ? 400 : 500 }
       );
     }
 
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
 

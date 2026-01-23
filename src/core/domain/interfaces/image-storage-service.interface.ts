@@ -6,11 +6,7 @@ export interface ImageStorageService {
   /**
    * Almacena un archivo y retorna la ruta donde fue guardado.
    */
-  store(
-    buffer: Buffer,
-    jobId: string,
-    fileName: string,
-  ): Promise<string>;
+  store(buffer: Buffer, jobId: string, fileName: string): Promise<string>;
 
   /**
    * Recupera un archivo por su ruta.

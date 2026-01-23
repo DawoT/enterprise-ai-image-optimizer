@@ -29,7 +29,7 @@ describe('ImageJob', () => {
         ImageJob.create({
           ...validProps,
           fileName: '',
-        }),
+        })
       ).toThrow(InvalidImageJobError);
     });
 
@@ -38,7 +38,7 @@ describe('ImageJob', () => {
       delete (props as { fileName?: string }).fileName;
 
       expect(() => ImageJob.create(props as Parameters<typeof ImageJob.create>[0])).toThrow(
-        InvalidImageJobError,
+        InvalidImageJobError
       );
     });
 
@@ -47,7 +47,7 @@ describe('ImageJob', () => {
         ImageJob.create({
           ...validProps,
           mimeType: 'application/json',
-        }),
+        })
       ).toThrow(InvalidImageJobError);
     });
 
@@ -56,7 +56,7 @@ describe('ImageJob', () => {
         ImageJob.create({
           ...validProps,
           originalFileSize: 100 * 1024 * 1024, // 100MB, exceeds 50MB limit
-        }),
+        })
       ).toThrow(InvalidImageJobError);
     });
 
@@ -65,7 +65,7 @@ describe('ImageJob', () => {
         ImageJob.create({
           ...validProps,
           originalFilePath: '',
-        }),
+        })
       ).toThrow(InvalidImageJobError);
     });
 
@@ -169,7 +169,7 @@ describe('ImageJobId', () => {
   it('should create a valid UUID v4', () => {
     const id = ImageJobId.create();
     expect(id.value).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
     );
   });
 
