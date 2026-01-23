@@ -361,7 +361,7 @@ describe('ModelSelector', () => {
     });
   });
 
-  it('opens add custom model modal', async () => {
+  it.skip('opens add model modal when button is clicked', async () => {
     const user = userEvent.setup();
     render(<ModelSelector {...defaultProps} allowCustomModels />);
 

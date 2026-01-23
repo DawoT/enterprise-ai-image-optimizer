@@ -499,8 +499,8 @@ describe('AuditDetailDrawer Component', () => {
 
       render(<AuditDetailDrawer {...defaultProps} onClose={onClose} />);
 
-      const closeButton = screen.getByRole('button', { name: /cerrar/i });
-      await user.click(closeButton);
+      const closeButtons = screen.getAllByRole('button', { name: /cerrar/i });
+      await user.click(closeButtons[0]);
 
       expect(onClose).toHaveBeenCalled();
     });
@@ -533,8 +533,8 @@ describe('AuditDetailDrawer Component', () => {
     it('debería tener focus trap', () => {
       render(<AuditDetailDrawer {...defaultProps} />);
 
-      const closeButton = screen.getByRole('button', { name: /cerrar/i });
-      expect(document.activeElement).toBe(closeButton);
+      const closeButtons = screen.getAllByRole('button', { name: /cerrar/i });
+      expect(document.activeElement).toBe(closeButtons[0]);
     });
   });
 });
